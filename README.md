@@ -1,0 +1,1 @@
+# Synexia-CRM

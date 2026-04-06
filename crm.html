@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synexia CRM</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #222; font-size: 14px; }
+
+.login-screen { position: fixed; inset: 0; background: #1a1a2e; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.login-box { background: #fff; border-radius: 12px; padding: 40px 36px; width: 90%; max-width: 360px; text-align: center; }
+.login-box .logo { font-size: 22px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+.login-box .sub { font-size: 13px; color: #999; margin-bottom: 28px; }
+.login-box input { width: 100%; padding: 11px 14px; border: 1.5px solid #ddd; border-radius: 7px; font-size: 15px; outline: none; text-align: center; letter-spacing: 2px; margin-bottom: 12px; }
+.login-box input:focus { border-color: #e94560; }
+.login-box button { width: 100%; padding: 12px; background: #e94560; color: #fff; border: none; border-radius: 7px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.login-box button:hover { background: #c73250; }
+.login-err { display: none; margin-top: 10px; font-size: 12px; color: #e94560; }
+
+.nav { background: #1a1a2e; display: flex; align-items: center; padding: 0 20px; }
+.nav .brand { color: #fff; font-size: 15px; font-weight: 700; padding: 14px 0; }
+.nav .sub { color: #555; font-size: 12px; margin-left: 10px; }
+
+.page { padding: 28px; max-width: 1300px; margin: 0 auto; }
+.crm-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+.crm-top h2 { font-size: 18px; color: #1a1a2e; font-weight: 700; }
+.saving { display: none; font-size: 11px; color: #999; margin-left: 8px; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar input, .toolbar select { padding: 8px 11px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 12px; outline: none; background: #fff; color: #222; }
+.toolbar input:focus, .toolbar select:focus { border-color: #e94560; }
+.btn-add { background: #1a1a2e; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-add:hover { background: #2d2d4e; }
+.btn-refresh { background: #fff; color: #333; border: 1.5px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; cursor: pointer; }
+
+.stats { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.sbox { background: #fff; border-radius: 8px; padding: 12px 18px; flex: 1; min-width: 100px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); text-align: center; }
+.sbox .n { font-size: 24px; font-weight: 800; }
+.sbox .l { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,0.06); min-width: 750px; }
+thead tr { background: #1a1a2e; }
+thead th { padding: 11px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.4px; }
+tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafafa; }
+tbody td { padding: 9px 12px; font-size: 12px; vertical-align: middle; }
+
+.ss { padding: 5px 7px; border-radius: 5px; border: 1.5px solid; font-size: 11px; font-weight: 600; cursor: pointer; outline: none; min-width: 155px; }
+.s0 { background: #e3f2fd; color: #1565c0; border-color: #90caf9; }
+.s1 { background: #e8eaf6; color: #283593; border-color: #9fa8da; }
+.s2 { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+.s3 { background: #fce4ec; color: #880e4f; border-color: #f48fb1; }
+.s4 { background: #e8f5e9; color: #1b5e20; border-color: #a5d6a7; }
+.s5 { background: #ffebee; color: #b71c1c; border-color: #ef9a9a; }
+.s6 { background: #e0f7fa; color: #006064; border-color: #80deea; }
+.s7 { background: #f5f5f5; color: #616161; border-color: #bdbdbd; }
+.s8 { background: #f3e5f5; color: #4a148c; border-color: #ce93d8; }
+.s9 { background: #fff8e1; color: #f57f17; border-color: #ffe082; }
+
+.src { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.src-facebook { background: #e7f0ff; color: #1877f2; }
+.src-instagram { background: #fce4ec; color: #c2185b; }
+.src-tiktok { background: #e8f5e9; color: #006d2e; }
+.src-direct { background: #f5f5f5; color: #555; }
+
+.ni { width: 100%; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 3px 6px; font-size: 12px; color: #555; resize: none; outline: none; min-width: 110px; }
+.ni:focus { border-color: #ddd; background: #fff; }
+.btn-del { background: none; border: none; color: #ddd; cursor: pointer; font-size: 13px; padding: 3px 7px; border-radius: 4px; }
+.btn-del:hover { color: #e94560; background: #ffeef0; }
+.empty { text-align: center; padding: 50px; color: #aaa; font-size: 13px; }
+.loading { text-align: center; padding: 50px; color: #aaa; font-size: 13px; }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; align-items: center; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 28px; width: 90%; max-width: 400px; }
+.modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; color: #1a1a2e; }
+.fg { margin-bottom: 14px; }
+.fg label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+.fg input, .fg select { width: 100%; padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 7px; font-size: 14px; outline: none; }
+.fg input:focus, .fg select:focus { border-color: #e94560; }
+.mact { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.mact button { padding: 8px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.btn-cancel { background: #f5f5f5; color: #333; border: none; }
+.btn-save { background: #e94560; color: #fff; border: none; }
+.btn-save:disabled { background: #ccc; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="logo">Synexia</div>
+    <div class="sub">CRM სისტემა · MicroAGI Georgia</div>
+    <input type="password" id="pw-input" placeholder="პაროლი" onkeydown="if(event.key==='Enter')checkPw()">
+    <button onclick="checkPw()">შესვლა</button>
+    <div class="login-err" id="login-err">❌ არასწორი პაროლი</div>
+  </div>
+</div>
+
+<div class="nav">
+  <span class="brand">Synexia CRM</span>
+  <span class="sub">· MicroAGI Georgia</span>
+</div>
+
+<div class="page">
+  <div class="crm-top">
+    <h2>ლიდების მართვა <span class="saving" id="saving">შენახვა...</span></h2>
+    <div class="toolbar">
+      <input type="text" id="srch" placeholder="🔍 ძებნა..." oninput="renderTable()">
+      <select id="fst" onchange="renderTable()">
+        <option value="">ყველა სტატუსი</option>
+        <option>New Lead</option><option>Contacted</option>
+        <option>Follow-up Needed</option><option>In Negotiation</option>
+        <option>Onboarded</option><option>Declined</option>
+        <option>Active Operator</option><option>Non/In-active Operator</option>
+        <option>Needs to Call Back</option><option>Needs Training</option>
+      </select>
+      <select id="fsrc" onchange="renderTable()">
+        <option value="">ყველა წყარო</option>
+        <option value="facebook">Facebook</option>
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="direct">სხვა</option>
+      </select>
+      <button class="btn-refresh" onclick="loadLeads()">↻ განახლება</button>
+      <button class="btn-add" onclick="openModal()">+ ხელით დამატება</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="tbl-wrap" id="tbl-wrap"><div class="loading">⏳ შედი სისტემაში...</div></div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h3>ახალი ლიდის დამატება</h3>
+    <div class="fg"><label>სახელი და გვარი *</label><input type="text" id="mn"></div>
+    <div class="fg"><label>ტელეფონი *</label><input type="tel" id="mp"></div>
+    <div class="fg"><label>ელ-ფოსტა</label><input type="email" id="me"></div>
+    <div class="fg"><label>ასაკი</label><input type="number" id="ma"></div>
+    <div class="fg"><label>წყარო</label>
+      <select id="msrc">
+        <option value="facebook">Facebook</option>
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="direct">სხვა</option>
+      </select>
+    </div>
+    <div class="mact">
+      <button class="btn-cancel" onclick="closeModal()">გაუქმება</button>
+      <button class="btn-save" id="modal-save-btn" onclick="addManual()">დამატება</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzgRQEZVvlzXgMXrnwwGJaibDuMuyC8TqS3QMBXn7g49v8Egl3iFbaJMgoeVnwbJh3AJQ/exec";
+const STATUSES = ["New Lead","Contacted","Follow-up Needed","In Negotiation","Onboarded","Declined","Active Operator","Non/In-active Operator","Needs to Call Back","Needs Training"];
+const SRCL = {facebook:"Facebook",instagram:"Instagram",tiktok:"TikTok",direct:"სხვა"};
+let leads = [];
+
+function checkPw() {
+  if (document.getElementById('pw-input').value === 'Synexia2026') {
+    document.getElementById('login-screen').style.display = 'none';
+    loadLeads();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function statusClass(s) {
+  const i = STATUSES.indexOf(s);
+  return i >= 0 ? "s" + i : "s0";
+}
+
+async function apiCall(params) {
+  const url = new URL(API);
+  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+  const res = await fetch(url.toString(), { redirect: "follow" });
+  return res.json();
+}
+
+async function loadLeads() {
+  document.getElementById('tbl-wrap').innerHTML = '<div class="loading">⏳ იტვირთება...</div>';
+  try {
+    const data = await apiCall({ action: "getLeads" });
+    leads = (data.leads || []).reverse();
+    renderStats();
+    renderTable();
+  } catch(e) {
+    document.getElementById('tbl-wrap').innerHTML = '<div class="empty">❌ კავშირის შეცდომა. სცადე განახლება.</div>';
+  }
+}
+
+function renderStats() {
+  const t = leads.length;
+  const n = leads.filter(l => l.status === "New Lead").length;
+  const o = leads.filter(l => l.status === "Onboarded").length;
+  const a = leads.filter(l => l.status === "Active Operator").length;
+  const d = leads.filter(l => l.status === "Declined").length;
+  document.getElementById('stats').innerHTML = `
+    <div class="sbox"><div class="n">${t}</div><div class="l">სულ</div></div>
+    <div class="sbox"><div class="n" style="color:#1565c0">${n}</div><div class="l">New Lead</div></div>
+    <div class="sbox"><div class="n" style="color:#1b5e20">${o}</div><div class="l">Onboarded</div></div>
+    <div class="sbox"><div class="n" style="color:#006064">${a}</div><div class="l">Active</div></div>
+    <div class="sbox"><div class="n" style="color:#b71c1c">${d}</div><div class="l">Declined</div></div>`;
+}
+
+function renderTable() {
+  const srch = (document.getElementById('srch').value || '').toLowerCase();
+  const fst = document.getElementById('fst').value;
+  const fsrc = document.getElementById('fsrc').value;
+  let fl = leads.filter(l => {
+    if (fst && l.status !== fst) return false;
+    if (fsrc && l.source !== fsrc) return false;
+    if (srch && !l.name.toLowerCase().includes(srch) && !l.phone.includes(srch) && !(l.email||'').toLowerCase().includes(srch)) return false;
+    return true;
+  });
+  if (!fl.length) { document.getElementById('tbl-wrap').innerHTML = '<div class="empty">ლიდი ვერ მოიძებნა</div>'; return; }
+  const rows = fl.map(l => {
+    const sc = statusClass(l.status);
+    const opts = STATUSES.map(s => `<option value="${s}"${l.status===s?' selected':''}>${s}</option>`).join('');
+    return `<tr>
+      <td style="font-weight:600;color:#1a1a2e">${l.name}</td>
+      <td>${l.phone}</td>
+      <td>${l.email||'—'}</td>
+      <td>${l.age||'—'}</td>
+      <td><span class="src src-${l.source}">${SRCL[l.source]||l.source}</span></td>
+      <td><select class="ss ${sc}" onchange="updateStatus('${l.id}',this)">${opts}</select></td>
+      <td><textarea class="ni" rows="1" onblur="updateNotes('${l.id}',this)" placeholder="შენიშვნა...">${l.notes||''}</textarea></td>
+      <td style="color:#aaa">${l.date||''}</td>
+      <td><button class="btn-del" onclick="deleteLead('${l.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tbl-wrap').innerHTML = `<table>
+    <thead><tr><th>სახელი</th><th>ტელეფონი</th><th>ელ-ფოსტა</th><th>ასაკი</th><th>წყარო</th><th>სტატუსი</th><th>შენიშვნა</th><th>თარიღი</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function showSaving() {
+  const el = document.getElementById('saving');
+  el.style.display = 'inline';
+  setTimeout(() => el.style.display = 'none', 1500);
+}
+
+async function updateStatus(id, sel) {
+  const l = leads.find(x => x.id == id);
+  if (l) l.status = sel.value;
+  STATUSES.forEach((_, i) => sel.classList.remove('s'+i));
+  sel.classList.add(statusClass(sel.value));
+  showSaving();
+  await apiCall({ action: "updateStatus", id, status: sel.value });
+}
+
+async function updateNotes(id, el) {
+  const l = leads.find(x => x.id == id);
+  if (l) l.notes = el.value;
+  showSaving();
+  await apiCall({ action: "updateNotes", id, notes: el.value });
+}
+
+async function deleteLead(id) {
+  if (!confirm('წაიშალოს ეს ლიდი?')) return;
+  leads = leads.filter(l => l.id != id);
+  renderStats();
+  renderTable();
+  await apiCall({ action: "deleteLead", id });
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  ['mn','mp','me','ma'].forEach(id => document.getElementById(id).value = '');
+}
+
+async function addManual() {
+  const name = document.getElementById('mn').value.trim();
+  const phone = document.getElementById('mp').value.trim();
+  if (!name || !phone) { alert('სახელი და ტელეფონი სავალდებულოა'); return; }
+  const btn = document.getElementById('modal-save-btn');
+  btn.disabled = true; btn.textContent = 'ემატება...';
+  try {
+    await apiCall({ action: "addLead", name, phone, email: document.getElementById('me').value.trim(), age: document.getElementById('ma').value.trim(), source: document.getElementById('msrc').value });
+    closeModal();
+    loadLeads();
+  } catch(e) { alert('შეცდომა.'); }
+  btn.disabled = false; btn.textContent = 'დამატება';
+}
+</script>
+</body>
+</html>

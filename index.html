@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synexia — რეგისტრაცია</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f3fa;
+    --white: #ffffff;
+    --blue: #1a56ff;
+    --blue-dark: #1040d4;
+    --navy: #060d2b;
+    --text: #0d1117;
+    --muted: #6b7280;
+    --border: #e2e6f0;
+    --input-bg: #f7f9fc;
+    --error: #ef4444;
+    --success: #059669;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 16px 40px;
+  }
+
+  /* Topbar */
+  .topbar {
+    position: fixed; top:0; left:0; right:0; height:52px;
+    background: var(--navy);
+    display: flex; align-items: center; padding: 0 28px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(26,86,255,0.25);
+  }
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--blue); }
+  .logo-badge {
+    margin-left: 12px;
+    background: rgba(26,86,255,0.2);
+    border: 1px solid rgba(26,86,255,0.35);
+    color: #7fa8ff;
+    font-size: 9px; font-weight: 600; letter-spacing: 1.8px;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 2px;
+  }
+  .topbar-right {
+    margin-left: auto;
+    font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px;
+  }
+
+  /* Card */
+  .card {
+    width: 100%; max-width: 480px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(6,13,43,0.1);
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .card-top {
+    background: var(--navy);
+    padding: 26px 32px;
+    position: relative; overflow: hidden;
+  }
+  .card-top::before {
+    content:'';
+    position: absolute; right:-80px; top:-80px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(26,86,255,0.25) 0%, transparent 65%);
+  }
+  .card-top::after {
+    content:'';
+    position: absolute; left: 0; bottom: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(26,86,255,0.5), transparent);
+  }
+  .card-top-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 6px;
+    position: relative;
+  }
+  .card-top-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700; color: #fff;
+    position: relative; margin-bottom: 5px;
+  }
+  .card-top-sub {
+    font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.6;
+    position: relative;
+  }
+
+  .card-body { padding: 28px 32px; }
+
+  /* Fields */
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: #374151;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .req { color: var(--blue); font-size: 13px; }
+
+  .input-wrap { display: flex; }
+
+  .phone-prefix {
+    background: var(--navy);
+    color: rgba(255,255,255,0.65);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600;
+    padding: 0 13px;
+    border: 1.5px solid var(--navy);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    display: flex; align-items: center;
+    user-select: none; white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 400;
+    padding: 10px 13px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    -webkit-appearance: none;
+  }
+  input.phone-input {
+    border-radius: 0 8px 8px 0;
+    letter-spacing: 1.5px; font-weight: 500;
+  }
+  input::placeholder { color: #c0c8d8; font-weight: 400; letter-spacing: 0; }
+  input.phone-input::placeholder { letter-spacing: 0.5px; }
+
+  input:focus, select:focus {
+    border-color: var(--blue);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(26,86,255,0.09);
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    padding-right: 38px; cursor: pointer;
+  }
+  select option { background: #fff; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Submit */
+  .btn {
+    width: 100%;
+    background: var(--blue); color: #fff;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 13px;
+    border-radius: 8px;
+    cursor: pointer; margin-top: 4px;
+    transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,255,0.28); }
+  .btn:active { transform: translateY(0); box-shadow: none; }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+  .loader { display:none; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+  .btn.loading .btn-text { display:none; }
+  .btn.loading .loader { display:block; }
+
+  .message { padding: 11px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-top: 12px; display: none; }
+  .message.success { background:#ecfdf5; border:1px solid #6ee7b7; color:var(--success); display:block; }
+  .message.error   { background:#fef2f2; border:1px solid #fca5a5; color:var(--error);   display:block; }
+
+  .sep { height:1px; background:var(--border); margin:22px 0; }
+
+  .footer { margin-top: 18px; font-size: 11px; color: var(--muted); text-align: center; letter-spacing: 0.3px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  @media(max-width:440px){
+    .card-body,.card-top{padding-left:20px;padding-right:20px;}
+    .row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Syn<span>exia</span></div>
+  <div class="logo-badge">AI Data</div>
+  <div class="topbar-right">Georgia · MicroAGI Partner</div>
+</div>
+
+<div class="card">
+  <div class="card-top">
+    <div class="card-top-label">Operator Registration</div>
+    <div class="card-top-title">ოპერატორის რეგისტრაცია</div>
+    <div class="card-top-sub">შეავსეთ ფორმა — ჩვენი გუნდი დაგიკავშირდებათ უახლოეს დროში.</div>
+  </div>
+
+  <div class="card-body">
+    <div class="field">
+      <label>სახელი და გვარი <span class="req">*</span></label>
+      <input type="text" id="name" placeholder="მაგ. გიორგი მამულაძე" required>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>ტელეფონი <span class="req">*</span></label>
+        <div class="input-wrap">
+          <div class="phone-prefix">+995</div>
+          <input
+            type="tel"
+            id="phone"
+            class="phone-input"
+            placeholder="5XXXXXXXX"
+            maxlength="9"
+            inputmode="numeric"
+            oninput="this.value=this.value.replace(/\D/g,'').slice(0,9)"
+            required>
+        </div>
+      </div>
+      <div class="field">
+        <label>ასაკი <span class="req">*</span></label>
+        <input type="number" id="age" placeholder="18" min="16" max="70" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>ელ-ფოსტა</label>
+      <input type="email" id="email" placeholder="example@gmail.com">
+    </div>
+
+    <div class="field">
+      <label>საიდან გაიგეთ ჩვენ შესახებ? <span class="req">*</span></label>
+      <select id="source" required>
+        <option value="" disabled selected>აირჩიეთ...</option>
+        <option>Facebook</option>
+        <option>Instagram</option>
+        <option>TikTok</option>
+        <option>YouTube</option>
+        <option>მეგობრის რეკომენდაცია</option>
+        <option>Google</option>
+        <option>SMS / Viber</option>
+        <option>სხვა</option>
+      </select>
+    </div>
+
+    <div class="sep"></div>
+
+    <button class="btn" id="submitBtn" onclick="submitForm()">
+      <span class="btn-text">განაცხადის გაგზავნა →</span>
+      <div class="loader"></div>
+    </button>
+
+    <div class="message" id="message"></div>
+  </div>
+</div>
+
+<div class="footer">© 2026 Synexia Georgia · MicroAGI Partner Network</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzucVGsLAG8h43yQ2QGDKqK7oLsnJQUeV0jkUWhBbTvWPlDBB_-Q16zfyj67zn9QesWYw/exec";
+
+  async function submitForm() {
+    const btn = document.getElementById("submitBtn");
+    const msg = document.getElementById("message");
+    msg.className = "message"; msg.textContent = "";
+
+    const name   = document.getElementById("name").value.trim();
+    const phone  = document.getElementById("phone").value.trim();
+    const age    = document.getElementById("age").value.trim();
+    const email  = document.getElementById("email").value.trim();
+    const source = document.getElementById("source").value;
+
+    if (!name || !phone || !age || !source) {
+      msg.className = "message error";
+      msg.textContent = "⚠ გთხოვთ შეავსოთ ყველა სავალდებულო ველი.";
+      return;
+    }
+    if (phone.length !== 9) {
+      msg.className = "message error";
+      msg.textContent = "⚠ ტელეფონი უნდა იყოს ზუსტად 9 ციფრი.";
+      return;
+    }
+
+    btn.classList.add("loading"); btn.disabled = true;
+
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "submitLead", name, phone: "+995" + phone, age, email, source })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msg.className = "message success";
+        msg.textContent = `✓ განაცხადი მიღებულია! ID: ${data.id}`;
+        ["name","phone","age","email"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("source").value = "";
+      } else { throw new Error(data.message); }
+    } catch {
+      msg.className = "message error";
+      msg.textContent = "⚠ შეცდომა. სცადეთ მოგვიანებით.";
+    } finally {
+      btn.classList.remove("loading"); btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

@@ -151,6 +151,8 @@
   .success-icon svg { width: 32px; height: 32px; stroke: var(--success); fill: none; stroke-width: 2.5; }
   .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--white); margin-bottom: 10px; }
   .success-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 320px; margin: 0 auto; }
+  .success-screen.is-info .success-icon { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.45); }
+  .success-screen.is-info .success-icon svg { stroke: rgba(255,255,255,0.75); }
   @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeUp   { from { opacity:0; transform:translateY(14px);  } to { opacity:1; transform:translateY(0); } }
   @keyframes spin     { to { transform: rotate(360deg); } }
@@ -334,11 +336,11 @@
     </div>
 
     <div class="success-screen" id="successScreen">
-      <div class="success-icon">
+      <div class="success-icon" id="successIcon">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <h3 class="success-title">წარმატებით დარეგისტრირდით!</h3>
-      <p class="success-text">მადლობა! თქვენი განაცხადი მიღებულია. Synexia-ს გუნდი მალე დაგიკავშირდებათ.</p>
+      <h3 class="success-title" id="successTitle">წარმატებით დარეგისტრირდით!</h3>
+      <p class="success-text" id="successText">მადლობა! თქვენი განაცხადი მიღებულია. Synexia-ს გუნდი მალე დაგიკავშირდებათ.</p>
     </div>
   </div>
 </div>
@@ -475,6 +477,17 @@ function validate() {
   return ok;
 }
 
+function showFinalScreen(opts) {
+  const o = opts || {};
+  const screen = document.getElementById("successScreen");
+  if (o.icon)  document.getElementById("successIcon").innerHTML  = o.icon;
+  if (o.title) document.getElementById("successTitle").textContent = o.title;
+  if (o.text)  document.getElementById("successText").textContent  = o.text;
+  screen.classList.toggle("is-info", !!o.info);
+  document.getElementById("formSection").style.display = "none";
+  screen.style.display = "block";
+}
+
 document.getElementById("regForm").addEventListener("submit", async function(e) {
   e.preventDefault();
   if (!validate()) return;
@@ -505,8 +518,15 @@ document.getElementById("regForm").addEventListener("submit", async function(e) 
       })
     });
     if (res.ok) {
-      document.getElementById("formSection").style.display = "none";
-      document.getElementById("successScreen").style.display = "block";
+      showFinalScreen();
+    } else if (res.status === 409) {
+      // ნომერი უკვე ბაზაშია — თავიდან ცდა ვერასდროს გაივლის, ამიტომ ფორმას ვხურავთ
+      showFinalScreen({
+        info: true,
+        icon: '<svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16.5"/><line x1="12" y1="7.5" x2="12" y2="7.5"/></svg>',
+        title: "ეს ნომერი უკვე დარეგისტრირებულია",
+        text: "თქვენი განაცხადი უკვე მიღებულია — ხელახლა რეგისტრაცია საჭირო არაა. Synexia-ს გუნდი დაგიკავშირდებათ."
+      });
     } else {
       btn.disabled = false; btn.textContent = "რეგისტრაცია";
       alert("შეცდომა. სცადეთ თავიდან.");
